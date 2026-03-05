@@ -21,6 +21,14 @@ public class TaskService {
         if (request.getTitle() == null || request.getTitle().isBlank()) {
             throw new TaskException("Title is required", HttpStatus.BAD_REQUEST);
         }
+
+        if (request.getAuthor() == null) {
+            throw new TaskException("Author is required", HttpStatus.BAD_REQUEST);
+        }
+
+        if (request.getAssignee() == null) {
+            throw new TaskException("Assignee is required", HttpStatus.BAD_REQUEST);
+        }
         request.setStatus(TaskStatus.TO_DO);
         request.setCreatedAt(LocalDateTime.now());
         return repository.save(request);
