@@ -52,4 +52,9 @@ public class TaskController {
 
         return service.getAll(status, assignee);
     }
+
+    @GetMapping("/exists/assignee/{userId}")
+    public boolean existsByAssignee(@PathVariable Long userId) {
+        return service.existsActiveByAssignee(userId);
+    }
 }

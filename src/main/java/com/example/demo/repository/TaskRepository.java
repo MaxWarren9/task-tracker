@@ -91,4 +91,19 @@ public class TaskRepository {
 
         return jdbcTemplate.query(sql.toString(), mapper);
     }
+
+    public boolean existsActiveByAssignee(Long userId) {
+        String sql = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM tasker.tasks
+                WHERE assignee = ?
+                  AND status NOT IN ('DONE', 'DELETE')
+            )
+            """;
+
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(sql, Boolean.class, userId)
+        );
+    }
 }

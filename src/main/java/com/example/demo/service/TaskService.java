@@ -75,4 +75,8 @@ public class TaskService {
                 assignee
         );
     }
+
+    public boolean existsActiveByAssignee(Long userId) {
+        return repository.existsActiveByAssignee(userId);
+    }
 }
