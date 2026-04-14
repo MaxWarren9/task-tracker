@@ -20,9 +20,9 @@ public class TaskRepository {
 
         String sql = """
                 INSERT INTO tasker.tasks(title, description, dead_line,
-                                  author, assignee, status,
+                                  author, assignee, status, team_id,
                                   created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 RETURNING *
                 """;
 
@@ -34,6 +34,7 @@ public class TaskRepository {
                 task.getAssignee(),
                 task.getStatus()
                     .name(),
+                task.getTeamId(),
                 task.getCreatedAt()
         );
     }
@@ -55,7 +56,9 @@ public class TaskRepository {
                     dead_line = ?,
                     assignee = ?,
                     status = ?,
-                    updated_at = ?
+                    team_id = ?,
+                    updated_at = ?,
+                    completed_at = ?
                 WHERE id = ?
                 RETURNING *
                 """;
@@ -67,12 +70,14 @@ public class TaskRepository {
                 task.getAssignee(),
                 task.getStatus()
                     .name(),
+                task.getTeamId(),
                 task.getUpdatedAt(),
+                task.getCompletedAt(),
                 task.getId()
         );
     }
 
-    public List<Task> findAllFiltered(String status, Long assignee) {
+    public List<Task> findAllFiltered(String status, Long assignee, Long teamId) {
 
         StringBuilder sql = new StringBuilder(
                 "SELECT * FROM tasker.tasks WHERE status <> 'DELETE'"
@@ -87,6 +92,10 @@ public class TaskRepository {
         if (assignee != null) {
             sql.append(" AND assignee = ")
                .append(assignee);
+        }
+
+        if (teamId != null) {
+            sql.append(" AND team_id = ").append(teamId);
         }
 
         return jdbcTemplate.query(sql.toString(), mapper);

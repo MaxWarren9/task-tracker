@@ -6,3 +6,10 @@ databaseChangeLog:
         - sqlFile:
             path: 20260403_init.sql
             relativeToChangelogFile: true
+  - changeSet:
+      id: team-added
+      author: maximvoinov
+      changes:
+        - sqlFile:
+            path: 20260414_team.sql
+            relativeToChangelogFile: true

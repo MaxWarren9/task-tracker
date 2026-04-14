@@ -1,0 +1,5 @@
+ALTER TABLE tasker.tasks
+    ADD COLUMN IF NOT EXISTS team_id BIGINT;
+
+ALTER TABLE tasker.tasks
+    ADD COLUMN IF NOT EXISTS completed_at TIMESTAMP;
