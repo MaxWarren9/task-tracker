@@ -48,12 +48,14 @@ public class TaskController {
     @Operation(summary = "Получить все задачи")
     public List<Task> getAll(
             @RequestParam(required = false) TaskStatus status,
-            @RequestParam(required = false) Long assignee) {
+            @RequestParam(required = false) Long assignee, @RequestParam(required = false) Long teamId) {
 
-        return service.getAll(status, assignee);
+        return service.getAll(status, assignee, teamId);
     }
 
+
     @GetMapping("/exists/assignee/{userId}")
+    @Operation(summary = "Проверить наличие активных задач")
     public boolean existsByAssignee(@PathVariable Long userId) {
         return service.existsActiveByAssignee(userId);
     }

@@ -28,4 +28,7 @@ public class Task {
     private LocalDateTime createdAt;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDateTime updatedAt;
+    private Long teamId;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private LocalDateTime completedAt;
 }

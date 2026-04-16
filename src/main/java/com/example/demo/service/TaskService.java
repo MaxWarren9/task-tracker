@@ -7,20 +7,21 @@ import com.example.demo.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import com.example.demo.config.TransitionValidator;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-//some changes to be displayed in PR
 
 @Service
 @RequiredArgsConstructor
 public class TaskService {
 
     private final TaskRepository repository;
+    private final TransitionValidator transitionValidator;
 
     public Task create(Task request) {
-        if (request.getTitle() == null || request.getTitle().isBlank()) {
+        if (request.getTitle() == null || request.getTitle()
+                                                 .isBlank()) {
             throw new TaskException("Title is required", HttpStatus.BAD_REQUEST);
         }
 
@@ -44,35 +45,53 @@ public class TaskService {
     public Task update(long id, Task request) {
 
         Task existing = get(id);
-
+        boolean updated = false;
         if (request.getTitle() != null) {
-            if (request.getTitle().isBlank()) {
+            if (request.getTitle()
+                       .isBlank()) {
                 throw new TaskException("Title cannot be empty", HttpStatus.BAD_REQUEST);
             }
             existing.setTitle(request.getTitle());
         }
 
-        if (request.getDescription() != null)
+        if (request.getDescription() != null) {
             existing.setDescription(request.getDescription());
+        }
 
-        if (request.getDeadline() != null)
+        if (request.getDeadline() != null) {
             existing.setDeadline(request.getDeadline());
+        }
 
-        if (request.getAssignee() != 0)
+        if (request.getAssignee() != 0) {
             existing.setAssignee(request.getAssignee());
+        }
 
-        if (request.getStatus() != null)
+        if (request.getStatus() != null) {
             existing.setStatus(request.getStatus());
+        }
 
         existing.setUpdatedAt(LocalDateTime.now());
 
+        if (request.getStatus() != null) {
+            transitionValidator.validate(existing.getStatus(), request.getStatus());
+            existing.setStatus(request.getStatus());
+
+            if (request.getStatus() == TaskStatus.DONE && existing.getCompletedAt() == null) {
+                existing.setCompletedAt(LocalDateTime.now());
+            }
+
+            updated = true;
+        }
         return repository.update(existing);
     }
 
-    public List<Task> getAll(TaskStatus status, Long assignee) {
+    public List<Task> getAll(TaskStatus status, Long assignee, Long teamId) {
         return repository.findAllFiltered(
-                status != null ? status.name() : null,
-                assignee
+                status != null
+                        ? status.name()
+                        : null,
+                assignee,
+                teamId
         );
     }
 
