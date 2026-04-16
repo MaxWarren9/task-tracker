@@ -14,15 +14,19 @@ public class TaskEventRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final TaskEventRowMapper mapper = new TaskEventRowMapper();
-
-    public TaskEvent save(TaskEvent event) {
-        String sql = """
+    private static final String SAVE = """
                 INSERT INTO tasker.task_events(task_id, event_type, event_payload, created_at)
                 VALUES (?, ?, ?, ?)
                 RETURNING *
                 """;
+    private static final String FIND_BY_ID = """
+                SELECT * FROM tasker.task_events
+                WHERE task_id = ?
+                ORDER BY created_at ASC
+                """;
 
-        return jdbcTemplate.queryForObject(sql, mapper,
+    public TaskEvent save(TaskEvent event) {
+        return jdbcTemplate.queryForObject(SAVE, mapper,
                 event.getTaskId(),
                 event.getEventType().name(),
                 event.getEventPayload(),
@@ -31,12 +35,6 @@ public class TaskEventRepository {
     }
 
     public List<TaskEvent> findByTaskId(Long taskId) {
-        String sql = """
-                SELECT * FROM tasker.task_events
-                WHERE task_id = ?
-                ORDER BY created_at ASC
-                """;
-
-        return jdbcTemplate.query(sql, mapper, taskId);
+        return jdbcTemplate.query(FIND_BY_ID, mapper, taskId);
     }
 }
